@@ -61,7 +61,44 @@ const groupDepartment = await Employee.aggregate([
   },
 ]);
 
-console.log(groupDepartment);
+const sort = await Employee.aggregate([
+  {
+    $sort: {
+      salary: 1, //1 -> asc, -1 -> desc
+    },
+  },
+]);
+
+// console.log(sort);
+
+//limit
+
+const limit =
+  await Employee.aggregate(
+    [{
+      $sort: {
+        salary: -1,
+      },
+    },
+    {
+      $limit: 3,
+    }
+  ]);
+
+// console.log(limit);
+
+const count = await Employee.aggregate([
+  {
+    $match:{
+      department:"IT"
+    }
+  },
+  {
+    $count:"totalITemployees"
+  }
+  
+])
+console.log(count);
 
 app.listen(PORT, () => {
   console.log("server strated!");
