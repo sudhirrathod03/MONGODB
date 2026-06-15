@@ -73,33 +73,133 @@ const sort = await Employee.aggregate([
 
 //limit
 
-const limit =
-  await Employee.aggregate(
-    [{
-      $sort: {
-        salary: -1,
-      },
+const limit = await Employee.aggregate([
+  {
+    $sort: {
+      salary: -1,
     },
-    {
-      $limit: 3,
-    }
-  ]);
+  },
+  {
+    $limit: 3,
+  },
+]);
 
 // console.log(limit);
 
 const count = await Employee.aggregate([
   {
-    $match:{
-      department:"IT"
+    $match: {
+      department: "IT",
+    },
+  },
+  {
+    $count: "totalITemployees",
+  },
+]);
+
+//Q1 Return all employees whose department is "IT".
+
+const findAllItEmp = await Employee.aggregate([
+  {
+    $match: {
+      department: "IT",
+    },
+  },
+]);
+
+// Q2 Return employees whose city is "Mumbai".
+
+const empWithCityMumbai = await Employee.aggregate([
+  {
+    $match: {
+      city: "Mumbai",
+    },
+  },
+  {
+    $project: {
+      empName: 1,
+      _id: 0,
+    },
+  },
+]);
+
+// Q3 Return only empName and salary.
+const filterEmp = await Employee.aggregate([
+  {
+    $project:{
+      empName:1,
+      salary:1,
+      _id:0
+    }
+  }
+])
+
+// Q4 renmae - Return:empName → name salary → income
+
+const reName = await Employee.aggregate([
+  {
+    $project:{
+      name:"$empName",
+      income:"$salary",
+      _id:0
+    }
+  }
+])
+
+// Q5 Return employees sorted by salary lowest to highest.
+
+const sortSalaryAsc = await Employee.aggregate([
+  {
+    $project:{
+      empName:1,
+      _id:0,
+      salary:1
+    }
+  },
+
+ {
+  $sort:{
+    salary:1
+  }
+ }
+])
+
+// Q6 Return employees sorted by salary highest to lowest.
+const sortSalaryDesc = await Employee.aggregate([
+  {
+    $project:{
+      empName:1,
+      salary:1,
+      _id:0
+    }
+  },{
+    $sort:{
+      salary:-1
+    }
+  }
+])
+
+
+// Q7Sort employees from youngest to oldest.
+
+const sortByAge = await Employee.aggregate([
+  {
+    $project:{
+      empName:1,
+      age:1,
+      _id:0
     }
   },
   {
-    $count:"totalITemployees"
+    $sort:{
+      age:1
+    }
   }
-  
 ])
-console.log(count);
 
+// Q89. Top 3 highest-paid employees
+
+console.log(sortByAge);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
