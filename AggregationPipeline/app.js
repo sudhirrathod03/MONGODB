@@ -123,6 +123,22 @@ const empWithCityMumbai = await Employee.aggregate([
   },
 ]);
 
+// Q23 Return employee name and salary whose city is "Mumbai"
+const empWithCityMumbai = await Employee.aggregate([
+  {
+    $match: {
+      city: "Mumbai",
+    },
+  },
+  {
+    $project: {
+      empName: 1,
+       salary: 1,
+      _id: 0,
+    },
+  },
+]);
+
 // Q3 Return only empName and salary.
 const filterEmp = await Employee.aggregate([
   {
