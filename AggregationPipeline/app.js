@@ -194,6 +194,7 @@ const sortSalaryDesc = await Employee.aggregate([
     }
   }
 ])
+console.log(sortSalaryDesc);
 
 
 // Q7Sort employees from youngest to oldest.
@@ -215,7 +216,7 @@ const sortByAge = await Employee.aggregate([
 
 // Q89. Top 3 highest-paid employees
 
-console.log(sortByAge);
+
 app.listen(PORT, () => {
   console.log("server strated!");
 });
