@@ -1,7 +1,5 @@
 import express from "express";
 import connectDB from "../config/db.js";
-import axios from "axios";
-
 import User from "../model/userModel.js";
 const app = express();
 app.use(express.json());
@@ -9,7 +7,6 @@ app.use(express.json());
 app.get("/users", async (req, res) => {
   try {
     const users = await User.find();
-    console.log(req);
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -81,6 +78,7 @@ app.listen(8080, () => {
 app.get("/pegination", async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
+    
     const limit = Number(req.query.limit) || 5;
 
     const skip = (page - 1) * limit;
@@ -91,4 +89,36 @@ app.get("/pegination", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+//get user by email
+
+app.get("/users/email", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const user = await User.find({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get("/sort", async (req, res) => {
+  try {
+    const users = await User.find().sort({ name: 1 });
+    res.status(200).json(users)
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 connectDB();
