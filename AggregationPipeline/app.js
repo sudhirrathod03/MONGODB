@@ -214,7 +214,34 @@ const sortByAge = await Employee.aggregate([
   }
 ])
 
-// Q89. Top 3 highest-paid employees
+// Q8 Skip first 2 employees
+const skipEmployees = await Employee.aggregate([
+  {
+    $sort: {
+      salary: -1,
+    },
+  },
+  {
+    $skip: 2,
+  },
+]);
+
+console.log(skipEmployees);
+
+// Q9 Department-wise salary statistics
+const departmentStats = await Employee.aggregate([
+  {
+    $group: {
+      _id: "$department",
+      totalSalary: { $sum: "$salary" },
+      averageSalary: { $avg: "$salary" },
+      highestSalary: { $max: "$salary" },
+      lowestSalary: { $min: "$salary" },
+    },
+  },
+]);
+
+console.log(departmentStats);
 
 
 app.listen(PORT, () => {
