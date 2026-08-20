@@ -16,6 +16,9 @@ app.get("/users", async (req, res) => {
 app.post("/users", async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    if(!name || !email || !password){
+      return res.status(400).json({message:"All fields are required"})
+    }
     const user = await new User({
       name: name,
       email: email,
