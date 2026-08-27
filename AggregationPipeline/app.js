@@ -240,9 +240,52 @@ const departmentStats = await Employee.aggregate([
     },
   },
 ]);
-
 console.log(departmentStats);
 
+const employeeSkills = await Employee.aggregate([
+  {
+    $unwind: "$skills",
+  },
+  {
+    $project: {
+      empName: 1,
+      skills: 1,
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employeeSkills);
+
+
+const employeesByDepartment = await Employee.aggregate([
+  {
+    $group: {
+      _id: "$department",
+      totalEmployees: { $sum: 1 },
+    },
+  },
+]);
+
+console.log(employeesByDepartment);
+
+
+const itSalaryStats = await Employee.aggregate([
+  {
+    $match: {
+      department: "IT",
+    },
+  },
+  {
+    $group: {
+      _id: "$department",
+      averageSalary: { $avg: "$salary" },
+      totalSalary: { $sum: "$salary" },
+    },
+  },
+]);
+
+console.log(itSalaryStats);
 
 app.listen(PORT, () => {
   console.log("server strated!");
