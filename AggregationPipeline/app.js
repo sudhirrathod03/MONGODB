@@ -365,6 +365,44 @@ const salaryCategory = await Employee.aggregate([
 ]);
 
 console.log(salaryCategory);
+const employeeWithAnnualSalary = await Employee.aggregate([
+  {
+    $set: {
+      annualSalary: {
+        $multiply: ["$salary", 12],
+      },
+    },
+  },
+  {
+    $project: {
+      empName: 1,
+      salary: 1,
+      annualSalary: 1,
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employeeWithAnnualSalary);
+const salaryCheck = await Employee.aggregate([
+  {
+    $match: {
+      $expr: {
+        $gt: ["$salary", { $multiply: ["$age", 1000] }],
+      },
+    },
+  },
+  {
+    $project: {
+      empName: 1,
+      age: 1,
+      salary: 1,
+      _id: 0,
+    },
+  },
+]);
+
+console.log(salaryCheck);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
