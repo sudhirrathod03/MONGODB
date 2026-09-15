@@ -403,6 +403,42 @@ const salaryCheck = await Employee.aggregate([
 ]);
 
 console.log(salaryCheck);
+
+const employeeDepartments = await Employee.aggregate([
+  {
+    $lookup: {
+      from: "departments",
+      localField: "departmentId",
+      foreignField: "_id",
+      as: "departmentDetails",
+    },
+  },
+]);
+
+console.log(employeeDepartments);
+
+const employeeDepartments = await Employee.aggregate([
+  {
+    $lookup: {
+      from: "departments",
+      localField: "departmentId",
+      foreignField: "_id",
+      as: "departmentDetails",
+    },
+  },
+  {
+    $unwind: "$departmentDetails",
+  },
+  {
+    $project: {
+      empName: 1,
+      "departmentDetails.name": 1,
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employeeDepartments);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
