@@ -384,38 +384,9 @@ const employeeWithAnnualSalary = await Employee.aggregate([
 ]);
 
 console.log(employeeWithAnnualSalary);
-const salaryCheck = await Employee.aggregate([
-  {
-    $match: {
-      $expr: {
-        $gt: ["$salary", { $multiply: ["$age", 1000] }],
-      },
-    },
-  },
-  {
-    $project: {
-      empName: 1,
-      age: 1,
-      salary: 1,
-      _id: 0,
-    },
-  },
-]);
 
-console.log(salaryCheck);
 
-const employeeDepartments = await Employee.aggregate([
-  {
-    $lookup: {
-      from: "departments",
-      localField: "departmentId",
-      foreignField: "_id",
-      as: "departmentDetails",
-    },
-  },
-]);
 
-console.log(employeeDepartments);
 
 
 app.listen(PORT, () => {
