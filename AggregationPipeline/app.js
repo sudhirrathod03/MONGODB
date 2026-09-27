@@ -347,26 +347,6 @@ const employees = await Employee.aggregate([
 ]);
 
 console.log(employees);
-const salaryCategory = await Employee.aggregate([
-  {
-    $project: {
-      empName: 1,
-      salary: 1,
-      category: {
-        $cond: {
-          if: { $gte: ["$salary", 60000] },
-          then: "High Salary",
-          else: "Low Salary",
-        },
-      },
-      _id: 0,
-    },
-  },
-]);
-
-console.log(salaryCategory);
-
-
 
 app.listen(PORT, () => {
   console.log("server strated!");
