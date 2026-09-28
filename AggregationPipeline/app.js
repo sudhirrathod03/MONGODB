@@ -327,26 +327,7 @@ const highSalaryEmployees = await Employee.aggregate([
 ]);
 
 console.log(highSalaryEmployees);
-const employees = await Employee.aggregate([
-  {
-    $match: {
-      $or: [
-        { department: "IT" },
-        { salary: { $gt: 70000 } },
-      ],
-    },
-  },
-  {
-    $project: {
-      empName: 1,
-      department: 1,
-      salary: 1,
-      _id: 0,
-    },
-  },
-]);
 
-console.log(employees);
 
 app.listen(PORT, () => {
   console.log("server strated!");
