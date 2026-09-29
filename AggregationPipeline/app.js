@@ -308,25 +308,7 @@ const employeeBonus = await Employee.aggregate([
 ]);
 
 console.log(employeeBonus);
-const highSalaryEmployees = await Employee.aggregate([
-  {
-    $match: {
-      salary: {
-        $gt: 50000,
-      },
-    },
-  },
-  {
-    $project: {
-      empName: 1,
-      salary: 1,
-      department: 1,
-      _id: 0,
-    },
-  },
-]);
 
-console.log(highSalaryEmployees);
 
 
 app.listen(PORT, () => {
