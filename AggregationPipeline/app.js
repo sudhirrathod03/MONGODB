@@ -289,25 +289,6 @@ const itSalaryStats = await Employee.aggregate([
 
 console.log(itSalaryStats);
 
-const employeeBonus = await Employee.aggregate([
-  {
-    $addFields: {
-      bonus: {
-        $multiply: ["$salary", 0.1],
-      },
-    },
-  },
-  {
-    $project: {
-      empName: 1,
-      salary: 1,
-      bonus: 1,
-      _id: 0,
-    },
-  },
-]);
-
-console.log(employeeBonus);
 
 
 
