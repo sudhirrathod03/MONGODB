@@ -289,7 +289,26 @@ const itSalaryStats = await Employee.aggregate([
 
 console.log(itSalaryStats);
 
+const employeesStartingWithA = await Employee.aggregate([
+  {
+    $match: {
+      empName: {
+        $regex: "^A",
+        $options: "i",
+      },
+    },
+  },
+  {
+    $project: {
+      empName: 1,
+      salary: 1,
+      department: 1,
+      _id: 0,
+    },
+  },
+]);
 
+console.log(employeesStartingWithA);
 
 
 app.listen(PORT, () => {
