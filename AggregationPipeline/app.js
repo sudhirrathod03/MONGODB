@@ -310,7 +310,37 @@ const employeesStartingWithA = await Employee.aggregate([
 
 console.log(employeesStartingWithA);
 
+const employeeStats = await Employee.aggregate([
+  {
+    $facet: {
+      employees: [
+        {
+          $sort: {
+            salary: -1,
+          },
+        },
+        {
+          $limit: 5,
+        },
+        {
+          $project: {
+            empName: 1,
+            salary: 1,
+            _id: 0,
+          },
+        },
+      ],
 
+      totalEmployees: [
+        {
+          $count: "count",
+        },
+      ],
+    },
+  },
+]);
+
+console.log(employeeStats);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
