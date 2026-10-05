@@ -340,6 +340,24 @@ const employeeStats = await Employee.aggregate([
   },
 ]);
 
+const employeeInfo = await Employee.aggregate([
+  {
+    $replaceWith: {
+      $mergeObjects: [
+        {
+          employee: "$empName",
+          income: "$salary",
+        },
+        {
+          department: "$department",
+        },
+      ],
+    },
+  },
+]);
+
+console.log(employeeInfo);
+
 console.log(employeeStats);
 app.listen(PORT, () => {
   console.log("server strated!");
