@@ -358,7 +358,25 @@ const employeeInfo = await Employee.aggregate([
 
 console.log(employeeInfo);
 
-console.log(employeeStats);
+const employees = await Employee.aggregate([
+  {
+    $match: {
+      department: {
+        $in: ["IT", "HR"],
+      },
+    },
+  },
+  {
+    $project: {
+      empName: 1,
+      department: 1,
+      salary: 1,
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employees);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
