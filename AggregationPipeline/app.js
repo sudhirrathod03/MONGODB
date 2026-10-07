@@ -377,6 +377,21 @@ const employees = await Employee.aggregate([
 ]);
 
 console.log(employees);
+
+const departmentStats = await Employee.aggregate([
+  {
+    $group: {
+      _id: "$department",
+      totalSalary: { $sum: "$salary" },
+      averageSalary: { $avg: "$salary" },
+      highestSalary: { $max: "$salary" },
+      lowestSalary: { $min: "$salary" },
+    },
+  },
+  {
+    $out: "departmentStats",
+  },
+]);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
