@@ -392,6 +392,26 @@ const departmentStats = await Employee.aggregate([
     $out: "departmentStats",
   },
 ]);
+
+const departmentStats = await Employee.aggregate([
+  {
+    $group: {
+      _id: "$department",
+      totalEmployees: { $sum: 1 },
+      averageSalary: { $avg: "$salary" },
+    },
+  },
+  {
+    $merge: {
+      into: "departmentStats",
+      on: "_id",
+      whenMatched: "merge",
+      whenNotMatched: "insert",
+    },
+  },
+]);
+
+console.log(departmentStats);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
