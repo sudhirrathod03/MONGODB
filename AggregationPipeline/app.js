@@ -457,7 +457,22 @@ const employeeBonus = await Employee.aggregate([
 
 console.log(employeeBonus);
 
+const employeeBonus = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      salary: 1,
+      salaryWithBonus: {
+        $ceil: {
+          $multiply: ["$salary", 1.1],
+        },
+      },
+      _id: 0,
+    },
+  },
+]);
 
+console.log(employeeBonus);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
