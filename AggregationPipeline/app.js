@@ -289,30 +289,12 @@ const itSalaryStats = await Employee.aggregate([
 
 console.log(itSalaryStats);
 
-const employeeBonus = await Employee.aggregate([
-  {
-    $addFields: {
-      bonus: {
-        $multiply: ["$salary", 0.1],
-      },
-    },
-  },
-  {
-    $project: {
-      empName: 1,
-      salary: 1,
-      bonus: 1,
-      _id: 0,
-    },
-  },
-]);
-
-console.log(employeeBonus);
-const highSalaryEmployees = await Employee.aggregate([
+const employeesStartingWithA = await Employee.aggregate([
   {
     $match: {
-      salary: {
-        $gt: 50000,
+      empName: {
+        $regex: "^A",
+        $options: "i",
       },
     },
   },
@@ -326,14 +308,62 @@ const highSalaryEmployees = await Employee.aggregate([
   },
 ]);
 
-console.log(highSalaryEmployees);
+console.log(employeesStartingWithA);
+
+const employeeStats = await Employee.aggregate([
+  {
+    $facet: {
+      employees: [
+        {
+          $sort: {
+            salary: -1,
+          },
+        },
+        {
+          $limit: 5,
+        },
+        {
+          $project: {
+            empName: 1,
+            salary: 1,
+            _id: 0,
+          },
+        },
+      ],
+
+      totalEmployees: [
+        {
+          $count: "count",
+        },
+      ],
+    },
+  },
+]);
+
+const employeeInfo = await Employee.aggregate([
+  {
+    $replaceWith: {
+      $mergeObjects: [
+        {
+          employee: "$empName",
+          income: "$salary",
+        },
+        {
+          department: "$department",
+        },
+      ],
+    },
+  },
+]);
+
+console.log(employeeInfo);
+
 const employees = await Employee.aggregate([
   {
     $match: {
-      $or: [
-        { department: "IT" },
-        { salary: { $gt: 70000 } },
-      ],
+      department: {
+        $in: ["IT", "HR"],
+      },
     },
   },
   {
@@ -347,16 +377,77 @@ const employees = await Employee.aggregate([
 ]);
 
 console.log(employees);
-const salaryCategory = await Employee.aggregate([
+
+const departmentStats = await Employee.aggregate([
+  {
+    $group: {
+      _id: "$department",
+      totalSalary: { $sum: "$salary" },
+      averageSalary: { $avg: "$salary" },
+      highestSalary: { $max: "$salary" },
+      lowestSalary: { $min: "$salary" },
+    },
+  },
+  {
+    $out: "departmentStats",
+  },
+]);
+
+const departmentStats = await Employee.aggregate([
+  {
+    $group: {
+      _id: "$department",
+      totalEmployees: { $sum: 1 },
+      averageSalary: { $avg: "$salary" },
+    },
+  },
+  {
+    $merge: {
+      into: "departmentStats",
+      on: "_id",
+      whenMatched: "merge",
+      whenNotMatched: "insert",
+    },
+  },
+]);
+
+console.log(departmentStats);
+
+const employeeSkills = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      firstSkill: {
+        $arrayElemAt: ["$skills", 0],
+      },
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employeeSkills);
+const employeeCities = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      city: {
+        $ifNull: ["$city", "Not Provided"],
+      },
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employeeCities);
+
+const employeeBonus = await Employee.aggregate([
   {
     $project: {
       empName: 1,
       salary: 1,
-      category: {
-        $cond: {
-          if: { $gte: ["$salary", 60000] },
-          then: "High Salary",
-          else: "Low Salary",
+      salaryWithBonus: {
+        $ceil: {
+          $multiply: ["$salary", 1.1],
         },
       },
       _id: 0,
@@ -364,7 +455,40 @@ const salaryCategory = await Employee.aggregate([
   },
 ]);
 
-console.log(salaryCategory);
+console.log(employeeBonus);
+
+const employeeBonus = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      salary: 1,
+      salaryWithBonus: {
+        $ceil: {
+          $multiply: ["$salary", 1.1],
+        },
+      },
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employeeBonus);
+
+const employeesUppercase = await Employee.aggregate([
+  {
+    $project: {
+      empName: {
+        $toUpper: "$empName",
+      },
+      department: {
+        $toUpper: "$department",
+      },
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employeesUppercase);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
