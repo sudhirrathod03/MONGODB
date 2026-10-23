@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Post from "../model/postModel.js";
+import { errorHandler } from "../middleware/errorMiddleware.js";
 
 import express from "express";
 const app = express();
@@ -14,19 +15,25 @@ const start = async () => {
 };
 
 //get all posts
-app.get("/posts", async (req, res) => {
+app.get("/posts", async (req, res, next) => {
   try {
+    throw new Error("custom error");
     const posts = await Post.find();
     res.status(200).json(posts);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
+    // res.status(500).json({message:error.message})
   }
 });
 
 //fetch single post
-app.get("/posts/:id", async (req, res) => {
+app.get("/posts/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({message:"not valid id"})
+    }
 
     const post = await Post.findById(id);
     if (!post) {
@@ -35,29 +42,34 @@ app.get("/posts/:id", async (req, res) => {
 
     return res.status(200).json({ post });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // res.status(500).json({ message: error.message });
+    next(error);
   }
 });
 
 //create post
 
-app.post("/posts", async (req, res) => {
-  const { title, description, likes } = req.body;
+app.post("/posts", async (req, res, next) => {
+  try {
+    const { title, description, likes } = req.body;
 
-  if (!title || !description || !likes) {
-    return res.status(400).json({ message: "All fields are required" });
+    if (!title || !description || !likes) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const newPost = await Post.create({
+      title,
+      description,
+      likes,
+    });
+
+    res.status(201).json({ message: "new post created", newPost });
+  } catch (error) {
+    next(error);
   }
-
-  const newPost = await Post.create({
-    title,
-    description,
-    likes,
-  });
-
-  res.status(201).json({ message: "new post created", newPost });
 });
 
-app.put("/posts/:id", async (req, res) => {
+app.put("/posts/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -74,22 +86,24 @@ app.put("/posts/:id", async (req, res) => {
 
     res.status(200).json({ message: "POST UPDATED", updatedPost });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // res.status(500).json({ message: error.message });
+    next(error);
   }
 });
 
-app.delete("/posts/:id", async (req, res) => {
+app.delete("/posts/:id", async (req, res, next) => {
   try {
-
-    const {id}= req.params
+    const { id } = req.params;
     const deletedPost = await Post.findByIdAndDelete(id);
-    res.status(200).json({message:"POST deleted", deletedPost})
+    res.status(200).json({ message: "POST deleted", deletedPost });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // res.status(500).json({ message: error.message });
+    next(error);
   }
 });
 
 start();
+app.use(errorHandler);
 app.listen(8080, () => {
   console.log("listening to port 8080");
 });
