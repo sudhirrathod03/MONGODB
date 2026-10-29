@@ -506,6 +506,20 @@ const employeeDetails = await Employee.aggregate([
 ]);
 
 console.log(employeeDetails);
+const roundedSalaries = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      salary: 1,
+      salaryInThousands: {
+        $round: [{ $divide: ["$salary", 1000] }, 2],
+      },
+      _id: 0,
+    },
+  },
+]);
+
+console.log(roundedSalaries);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
