@@ -520,6 +520,23 @@ const roundedSalaries = await Employee.aggregate([
 ]);
 
 console.log(roundedSalaries);
+const employees = await Employee.aggregate([
+  {
+    $match: {
+      $expr: {
+        $gt: [{ $strLenCP: "$empName" }, 5],
+      },
+    },
+  },
+  {
+    $project: {
+      empName: 1,
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employees);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
