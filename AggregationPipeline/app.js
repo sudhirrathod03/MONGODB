@@ -520,7 +520,7 @@ const roundedSalaries = await Employee.aggregate([
 ]);
 
 console.log(roundedSalaries);
-const employees = await Employee.aggregate([
+const employees1 = await Employee.aggregate([
   {
     $match: {
       $expr: {
@@ -531,6 +531,22 @@ const employees = await Employee.aggregate([
   {
     $project: {
       empName: 1,
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employees1);
+const employees = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      firstName: {
+        $arrayElemAt: [
+          { $split: ["$empName", " "] },
+          0,
+        ],
+      },
       _id: 0,
     },
   },
