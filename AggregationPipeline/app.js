@@ -645,6 +645,20 @@ const employees7 = await Employee.aggregate([
 ]);
 
 console.log(employees7);
+
+const employees8 = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      totalSkills: {
+        $size: "$skills",
+      },
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employees8);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
