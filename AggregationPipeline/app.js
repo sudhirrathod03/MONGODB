@@ -659,6 +659,20 @@ const employees8 = await Employee.aggregate([
 ]);
 
 console.log(employees8);
+
+const employees9 = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      reversedSkills: {
+        $reverseArray: "$skills",
+      },
+      _id: 0,
+    },
+  },
+]);
+
+console.log(employees9);
 app.listen(PORT, () => {
   console.log("server strated!");
 });
