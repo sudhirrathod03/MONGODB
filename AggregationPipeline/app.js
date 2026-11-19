@@ -774,6 +774,19 @@ const employees14 = await Employee.aggregate([
   },
 ]);
 
+const employees15 = await Employee.aggregate([
+  {
+    $project: {
+      empName: 1,
+      salary: 1,
+      salaryType: {
+        $type: "$salary",
+      },
+      _id: 0,
+    },
+  },
+]);
+
 
 
 app.listen(PORT, () => {
